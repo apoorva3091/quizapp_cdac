@@ -1,59 +1,51 @@
 pipeline {
 agent any
-
+	
 tools {
-maven "maven 3.6.0"
+maven "maven 3.6.3"
 }
 
 stages {
     stage('Clone') {
         steps {
-                git url: 'http://localhost:3000/demouser/Capstone.git'
+                git url: 'https://github.com/apoorva3091/quizapp_cdac.git'
             }
         }
             
-    stage('Build + SonarQube analysis'){
+    stage('Build'){
         steps{
-            echo 'Check code quality and Test the Build'
-
-            withSonarQubeEnv('sonarqube') {
-
-                    sh "mvn clean install sonar:sonar -Dsonar.login=admin -Dsonar.password=password"
-                }
-            }
+                sh "mvn clean install"
+		}
         }
         
-    stage ('Deploy artifacts to artifactory') {
+    stage ('Build Docker image') {
         steps{
-			script{
-			def server = Artifactory.server 'jfrog'
-			def uploadSpec = """{
-				"files": [{
-					"pattern": "*.war",
-					"target": "quizapp/${BUILD_NUMBER}/"
-					}]
-				}"""
-			server.upload(uploadSpec)
-			}
+		sh "docker build -t apoorva3091/quizapp ."
 		  }       
         }
 
-    stage('Download Artifacts'){
+    stage('Upload image to Docker Registry'){
         steps{
-            build job: 'download-artifact'
+            	echo "Docker Login"
+		
+		withCredentials([string(credentialsId: 'dockerhub', variable: 'DockerToken')]) {
+			sh "docker login --username=apoorva3091 --password=DockerToken"
+			echo "Docker push"
+			sh "docker push apoorva3091/quizapp:latest"
+		}
             }
         }
 
     stage('Invoking CD Part'){
         steps{
-            build job: 'Capstone-CD'
+            build job: 'quizapp-CD'
             }
         }
     }
     
 post {
     failure {
-        emailext body: '${BUILD_LOG}', subject: 'Build Failed', to: 'tanmesh59@gmail.com'
+        emailext body: '${BUILD_LOG}', subject: 'Build Failed', to: 'apoorvamishra3091@gmail.com'
         }
     }
 }
