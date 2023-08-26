@@ -5,13 +5,7 @@ tools {
 maven "3.6.3"
 }
 
-stages {
-    stage('Clone') {
-        steps {
-                git url: 'https://github.com/apoorva3091/quizapp_cdac.git'
-            }
-        }
-            
+stages {  
     stage('Build'){
         steps{
                 sh "mvn clean install"
@@ -27,9 +21,8 @@ stages {
     stage('Upload image to Docker Registry'){
         steps{
             	echo "Docker Login"
-		
 		withCredentials([string(credentialsId: 'dockerhub', variable: 'DockerToken')]) {
-			sh "docker login --username=apoorva3091 --password=DockerToken"
+			sh "docker login --username=apoorva3091 --password=${DockerToken}"
 			echo "Docker push"
 			sh "docker push apoorva3091/quizapp:latest"
 		}
