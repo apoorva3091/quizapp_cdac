@@ -2,4 +2,4 @@
 localhost ansible_connection=local
 
 [remote]
-web-server ansible_host=3.94.111.4 ansible_connection=ssh ansible_user=admin ansible_ssh_common_args="-o StrictHostKeyChecking=no"
+web-server ansible_host=54.234.90.78 ansible_connection=ssh ansible_user=admin ansible_ssh_common_args="-o StrictHostKeyChecking=no"
