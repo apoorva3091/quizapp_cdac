@@ -11,5 +11,5 @@
       shell: 'docker service rm quizapp'
       ignore_errors: yes
 
-    - name: Docker Swarm
+    - name: Create Docker Swarm Service
       shell: 'docker service create --name quizapp --replicas 1 --publish 13000:8080 apoorva3091/quizapp'
