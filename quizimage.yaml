@@ -1,11 +1,15 @@
-- hosts: localhost
-  tasks:
-        - name: Docker image Build
-          shell: 'docker image build -t quizapp /var/lib/jenkins/workspace/Capstone-CI'
-        - name: Stop Docker Service
-          shell : 'docker service rm quizapp'
-          ignore_errors: yes
-        - name: Docker Swarm
-          shell: 'docker service create --name quizapp --replicas 1 --publish 18018:8080 quizapp'
+---
+- name: Update Docker Service
+  hosts: web-server
   become: yes
 
+  tasks:
+    - name: Pull the latest Docker image
+      shell: 'docker pull apoorva3091/quizapp:latest'
+
+    - name: Stop Docker Service
+      shell: 'docker service rm quizapp'
+      ignore_errors: yes
+
+    - name: Docker Swarm
+      shell: 'docker service create --name quizapp --replicas 1 --publish 13000:8080 apoorva3091/quizapp'
