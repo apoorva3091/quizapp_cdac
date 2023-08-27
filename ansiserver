@@ -1,7 +1,5 @@
 [local]
 localhost ansible_connection=local
 
-[target]
-webapp ansible_host=23.20.202.151 ansible_connection=ssh ansible_user=admin
-
-
+[remote]
+web-server ansible_host=34.227.223.181 ansible_connection=ssh ansible_user=admin
